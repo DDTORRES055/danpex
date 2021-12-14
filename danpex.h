@@ -19,6 +19,7 @@ typedef struct lfsr128x3_t {
 
 /*********************** FUNCTION DECLARATIONS **********************/
 
+int verify_strong_password(unsigned char *p);
 void lfsr128_set_password(lfsr128_t *l, unsigned char *p);
 void lfsr128_init(lfsr128_t *l, uint64_t lfsr_h, uint64_t lfsr_l);
 uint64_t lfsr128_shift(lfsr128_t *l);

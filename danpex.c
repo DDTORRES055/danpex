@@ -3,9 +3,43 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "danpex.h"
 #include "sha256.h"
+
+int verify_strong_password(unsigned char *p)
+{
+
+  char *string1 = (char *)p;
+  int hasUpper = 0;
+  int hasLower = 0;
+  int hasDigit = 0;
+  int hasEspecial = 0;
+
+  for (int i = 0; i < strlen(string1); ++i)
+  {
+    if (islower(string1[i]))
+      hasLower = 1;
+
+    if (isupper(string1[i]))
+      hasUpper = 1;
+
+    if (isdigit(string1[i]))
+      hasDigit = 1;
+
+    if (!isdigit(string1[i]) && !isupper(string1[i]) && !islower(string1[i]))
+      hasEspecial = 1;
+  }
+  if (strlen(string1) > 8 && hasLower && hasUpper && hasDigit && hasEspecial)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
 
 void lfsr128_set_password(lfsr128_t *l, unsigned char *p)
 {
@@ -167,7 +201,7 @@ void usage()
       "danpex"
       "Uso: danpex [-p contraseña] [-n desplazamiento] <entrada> <salida>\n"
       "Opciones: \n"
-      "\t-p - Contraseña (i.e. key)\n"
+      "\t-p - Contraseña, por favor use una contraseña de mas de 8 caracteres que contenga al menos mayusculas, minusculas, numeros y caracteres espeaciales\n"
       "\t-n - Un numero aleatorio para el desplazamiento\n"
       "\t-r - Imprimir los numeros aleatorios\n"
       "Argumentos: \n"
@@ -236,6 +270,11 @@ int main(int argc, char *argv[])
   {
     fprintf(stderr, "Se debe proporcionar una contraseña.\n\n");
     usage();
+    exit(EXIT_FAILURE);
+  }
+  else if (!verify_strong_password(password))
+  {
+    printf("Contraseña insegura, por favor use una contraseña de mas de 8 caracteres que contenga al menos mayusculas, minusculas, numeros y caracteres espeaciales\n\n");
     exit(EXIT_FAILURE);
   }
 
